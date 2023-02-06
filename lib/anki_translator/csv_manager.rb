@@ -19,9 +19,13 @@ module AnkiTranslator
 
     def add_definitions
       ref = References.new
-      arr.map do |hash|
-        hash[:definition] = ref.definition(hash[:text])
-        hash
+      arr.each_with_object([]) do |i, arr|
+        definition = ref.definition(i[:text])
+        next unless definition
+
+        back = %(#{definition}\n\n"#{i[:context]}")
+        arr.push(front: i[:text], back: back)
+        # TODO: do something with the ones without definitions?
       end
     end
 
