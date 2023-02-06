@@ -18,7 +18,13 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 
-TODO: Write usage instructions here
+Parse CSV file
+```rb
+csv = AnkiTranslator::CsvManager.new
+csv.arr
+arr = csv.add_definitions
+csv.write(arr)
+```
 
 ## Development
 
