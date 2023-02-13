@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     anki_translator (0.1.0)
+      capybara-sessionkeeper
       dotenv
       faraday
       sqlite3
@@ -9,7 +10,21 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
+    addressable (2.8.1)
+      public_suffix (>= 2.0.2, < 6.0)
     ast (2.4.2)
+    capybara (3.38.0)
+      addressable
+      matrix
+      mini_mime (>= 0.1.3)
+      nokogiri (~> 1.8)
+      rack (>= 1.6.0)
+      rack-test (>= 0.6.3)
+      regexp_parser (>= 1.5, < 3.0)
+      xpath (~> 3.2)
+    capybara-sessionkeeper (0.2.0)
+      capybara
+      selenium-webdriver
     diff-lcs (1.5.0)
     dotenv (2.8.1)
     faraday (2.7.4)
@@ -17,9 +32,18 @@ GEM
       ruby2_keywords (>= 0.0.4)
     faraday-net_http (3.0.2)
     json (2.6.3)
+    matrix (0.4.2)
+    mini_mime (1.1.2)
+    nokogiri (1.14.0-x86_64-linux)
+      racc (~> 1.4)
     parallel (1.22.1)
     parser (3.2.0.0)
       ast (~> 2.4.1)
+    public_suffix (5.0.1)
+    racc (1.6.2)
+    rack (3.0.4.1)
+    rack-test (2.0.2)
+      rack (>= 1.3)
     rainbow (3.1.1)
     rake (13.0.6)
     regexp_parser (2.6.2)
@@ -51,8 +75,16 @@ GEM
       parser (>= 3.1.1.0)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
+    rubyzip (2.3.2)
+    selenium-webdriver (4.7.1)
+      rexml (~> 3.2, >= 3.2.5)
+      rubyzip (>= 1.2.2, < 3.0)
+      websocket (~> 1.0)
     sqlite3 (1.4.4)
     unicode-display_width (2.4.2)
+    websocket (1.2.9)
+    xpath (3.2.0)
+      nokogiri (~> 1.8)
 
 PLATFORMS
   x86_64-linux
