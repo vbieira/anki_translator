@@ -13,45 +13,56 @@ module AnkiTranslator
     end
 
     def generate
-      add_definitions
-      anki_card
+      add_references
+      write(anki_cards)
     end
 
     private
 
     attr_writer :notes
 
-    def anki_card
-      parse_context
-      # TODO: get anki stuff and add better translations to update them
-      # TODO: do something with the ones without definitions?
+    def anki_cards
+      notes.map do |note|
+        back = parse_translation(note.translation) +
+               parse_definition(note.definition) +
+               parse_context(note.text, note.context)
+        { front: note.text.downcase, back: back }
+      end
     end
 
     def write(array, filename = DEFAULT_OUTPUT_FILE)
-      headers = array.first.keys
       csv = CSV.generate do |row|
-        row << headers
         array.each { |hash| row << hash.values }
       end
       File.write(filename, csv)
     end
 
-    def add_definitions
+    def add_references
       notes.each do |note|
         references.search(note.text)
         note.definition = references.definition
-        note.definition = references.mw_definition(note.text) if note.definition.nil?
+        note.definition = references.mw_definition(note.text) unless note.definition
         note.translation = references.translate
       end
     end
 
-    def parse_context
-      sentences_regex = /\s+[^.!?]*[.!?]/
-      notes.each do |note|
-        sentences = note.context.scan(sentences_regex)
-        filter_context = sentences.select { |s| s.include?(note.text) }.first&.strip || note.context
-        note.context = filter_context.gsub(note.text, "<strong>#{note.text}</strong>")
-      end
+    def parse_context(text, context)
+      return "" unless context
+
+      "#{context.gsub(text, "<strong>#{text}</strong>")}\n"
+    end
+
+    def parse_translation(translation)
+      return "" unless translation
+
+      "#{translation.join(", ")}\n"
+    end
+
+    def parse_definition(definitions)
+      return "" unless definitions&.any?
+
+      lis = definitions.map { |definition| "<li>#{definition}</li>" }
+      "<ol>#{lis.join("")}</ol>"
     end
 
     Note = Struct.new(:text, :context, :definition, :translation)

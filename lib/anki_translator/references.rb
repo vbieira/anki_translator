@@ -26,22 +26,28 @@ module AnkiTranslator
 
     def search(text)
       puts "\"#{text}\" definition..."
-      session.all("span[lang=en]").first.find("textarea").set(text)
-      sleep 1
+      input = session.all("span[lang=en]").first.find("textarea")
+      input.set(text)
+      input.native.send_keys(:return)
+      sleep 2
     end
 
     def definition
       return nil unless session.has_css?("h3", text: "Definitions of ")
 
-      definitions = session.find("h3", text: "Definitions of ").all(:xpath, ".//..").first.all("div[lang=en]")
+      definitions_div = session.find("h3", text: "Definitions of ")
+      parent_div = definitions_div.all(:xpath, ".//..")&.first
+      definitions = parent_div.all("div[lang=en]")
       (0...definitions.count).step(2).map do |i|
         definition = definitions[i].text
-        quote = definitions[i + 1].text
-        %(#{definition}\n"#{quote}")
+        quote = definitions[i + 1]&.text
+        %(#{definition} "#{quote}")
       end
     end
 
     def translate
+      return nil unless session.has_css?("h3", text: "Translations of")
+
       session.find("table").all("th[scope=row]")[0..2].map(&:text)
     end
   end
