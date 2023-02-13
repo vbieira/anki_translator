@@ -18,12 +18,10 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 
-Parse CSV file
+Read input CSV and generate CSV output for Anki:
 ```rb
-csv = AnkiTranslator::CsvManager.new
-csv.arr
-arr = csv.add_definitions
-csv.write(arr)
+helper = AnkiTranslator::CSVHelper.new
+notes = helper.generate
 ```
 
 ## Development
