@@ -5,6 +5,8 @@ module AnkiTranslator
     DEFAULT_INPUT_FILE = "input.csv"
     DEFAULT_OUTPUT_FILE = "output.csv"
 
+    attr_reader :notes
+
     def initialize(input_file = DEFAULT_INPUT_FILE, output_file = DEFAULT_OUTPUT_FILE)
       @notes = parse(input_file)
       @total = @notes.count
@@ -14,7 +16,7 @@ module AnkiTranslator
 
     def generate
       notes.each_with_index do |note, i|
-        print %(\n[#{(i / total.to_f * 100).round(2)}%] "#{note.text}")
+        print %(\n[#{(i / total.to_f * 100).round(2)}%])
         add_reference(note)
       end
       write(anki_cards, output_file)
@@ -22,7 +24,7 @@ module AnkiTranslator
 
     private
 
-    attr_accessor :notes
+    attr_writer :notes
     attr_reader :references, :total, :output_file
 
     def anki_cards
@@ -43,17 +45,29 @@ module AnkiTranslator
     end
 
     def add_reference(note)
-      references.search(note.text)
+      references.search(parse_search_text(note.text))
       note.definition = fetch_definition(note.text)
-      note.translation = references.translate
+      note.translation = fetch_translation
       references.clear_search
     end
 
-    def fetch_definition(text)
-      gt_definition = references.definition
-      return gt_definition unless gt_definition.nil?
+    def parse_search_text(text)
+      text.gsub("<br>", "")
+    end
 
-      references.mw_definition(text)
+    def fetch_translation
+      translation = references.translate
+      print " [no translation]" unless translation
+      translation
+    end
+
+    def fetch_definition(text)
+      definition = references.definition
+      return definition unless definition.nil?
+
+      definition = references.mw_definition(text)
+      print " [no definition]" unless definition
+      definition
     end
 
     def parse_context(text, context)
@@ -78,8 +92,14 @@ module AnkiTranslator
     Note = Struct.new(:text, :context, :definition, :translation)
     def parse(filename)
       file = File.read(filename)
-      arr = CSV.parse(file, headers: true, header_converters: :symbol)
-      arr.map { |h| Note.new(*h.values_at(*Note.members)) }
+      anki_file = filename.match?(/.txt$/)
+      if anki_file
+        arr = CSV.parse(file, col_sep: "\t")
+        arr.map { |a| Note.new(text: a.first) }
+      else
+        arr = CSV.parse(file, headers: true, header_converters: :symbol)
+        arr.map { |h| Note.new(*h.values_at(*Note.members)) }
+      end
     end
   end
 end

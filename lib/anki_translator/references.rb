@@ -21,7 +21,7 @@ module AnkiTranslator
       print " [MW]"
       escaped_term = CGI.escape(term)
       body = conn.get(escaped_term).body.first
-      body&.key?("shortdef") ? body["shortdef"] : nil
+      body.is_a?(Hash) && body.key?("shortdef") ? body["shortdef"] : nil
     end
 
     def search(text)
@@ -30,6 +30,7 @@ module AnkiTranslator
       return search(text) if input_element.nil?
 
       text_area = input_element.find("textarea")
+      print %( "#{text}")
       text_area.set(text)
       text_area.native.send_keys(:return)
       sleep 2
