@@ -1,26 +1,29 @@
 # frozen_string_literal: true
 
 module AnkiTranslator
-  class CSVHelper
+  class CardsHelper
     DEFAULT_INPUT_FILE = "input.csv"
     DEFAULT_OUTPUT_FILE = "output.csv"
 
-    attr_reader :notes, :references, :total
-
-    def initialize(input = DEFAULT_INPUT_FILE, _output = DEFAULT_OUTPUT_FILE)
-      @notes = parse(input)
+    def initialize(input_file = DEFAULT_INPUT_FILE, output_file = DEFAULT_OUTPUT_FILE)
+      @notes = parse(input_file)
       @total = @notes.count
       @references = References.new
+      @output_file = output_file
     end
 
     def generate
-      add_references
-      write(anki_cards)
+      notes.each_with_index do |note, i|
+        print %(\n[#{(i / total.to_f * 100).round(2)}%] "#{note.text}")
+        add_reference(note)
+      end
+      write(anki_cards, output_file)
     end
 
     private
 
-    attr_writer :notes
+    attr_accessor :notes
+    attr_reader :references, :total, :output_file
 
     def anki_cards
       notes.map do |note|
@@ -31,24 +34,22 @@ module AnkiTranslator
       end
     end
 
-    def write(array, filename = DEFAULT_OUTPUT_FILE)
+    def write(array, filename)
       csv = CSV.generate do |row|
         array.each { |hash| row << hash.values }
       end
       File.write(filename, csv)
+      filename
     end
 
-    def add_references
-      notes.each_with_index do |note, i|
-        puts %([#{i + 1}/#{total}] "#{note.text}")
-        references.search(note.text)
-        note.definition = fetch_definition(note.text)
-        note.translation = references.translate
-      end
+    def add_reference(note)
+      references.search(note.text)
+      note.definition = fetch_definition(note.text)
+      note.translation = references.translate
+      references.clear_search
     end
 
     def fetch_definition(text)
-      puts "fetch_definition"
       gt_definition = references.definition
       return gt_definition unless gt_definition.nil?
 

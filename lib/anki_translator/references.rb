@@ -18,10 +18,10 @@ module AnkiTranslator
     end
 
     def mw_definition(term)
-      puts "\"#{term}\" definition [MW]..."
+      print " [MW]"
       escaped_term = CGI.escape(term)
       body = conn.get(escaped_term).body.first
-      body.is_a?(Hash) && body.key?("shortdef") ? body["shortdef"] : nil
+      body&.key?("shortdef") ? body["shortdef"] : nil
     end
 
     def search(text)
@@ -33,6 +33,13 @@ module AnkiTranslator
       text_area.set(text)
       text_area.native.send_keys(:return)
       sleep 2
+    end
+
+    def clear_search
+      input_element = session.all("span[lang=en]").first
+      return if input_element.nil?
+
+      input_element.find("textarea").set("")
     end
 
     def definition

@@ -5,7 +5,7 @@ require "csv"
 require "faraday"
 require "capybara/sessionkeeper"
 
-require_relative "anki_translator/csv_helper"
+require_relative "anki_translator/cards_helper"
 require_relative "anki_translator/references"
 require_relative "anki_translator/version"
 
