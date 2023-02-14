@@ -25,30 +25,50 @@ module AnkiTranslator
     end
 
     def search(text)
-      puts "\"#{text}\" definition..."
-      input = session.all("span[lang=en]").first.find("textarea")
-      input.set(text)
-      input.native.send_keys(:return)
+      sleep 1
+      input_element = session.all("span[lang=en]").first
+      return search(text) if input_element.nil?
+
+      text_area = input_element.find("textarea")
+      text_area.set(text)
+      text_area.native.send_keys(:return)
       sleep 2
     end
 
     def definition
-      return nil unless session.has_css?("h3", text: "Definitions of ")
+      return nil unless session.has_selector?("h3", text: "Definitions of ")
 
-      definitions_div = session.find("h3", text: "Definitions of ")
-      parent_div = definitions_div.all(:xpath, ".//..")&.first
-      definitions = parent_div.all("div[lang=en]")
+      definitions = session.find("h3", text: "Definitions of ")&.all(:xpath, ".//..")&.first&.all("div[lang=en]")
+      parse_definitions(definitions)
+    rescue Selenium::WebDriver::Error::StaleElementReferenceError
+      new_session
+      nil
+    end
+
+    def translate
+      return nil unless session.has_selector?("h3", text: "Translations of")
+
+      session.find("table").all("th[scope=row]")[0..2].map(&:text)
+    rescue Selenium::WebDriver::Error::StaleElementReferenceError
+      new_session
+      nil
+    end
+
+    private
+
+    attr_writer :session
+
+    def new_session
+      @session = Capybara::Session.new(:chrome)
+      @session.visit("#{GOOGLE_TRANSLATE_URL}?sl=en&tl=pt&op=translate")
+    end
+
+    def parse_definitions(definitions)
       (0...definitions.count).step(2).map do |i|
         definition = definitions[i].text
         quote = definitions[i + 1]&.text
         %(#{definition} "#{quote}")
       end
-    end
-
-    def translate
-      return nil unless session.has_css?("h3", text: "Translations of")
-
-      session.find("table").all("th[scope=row]")[0..2].map(&:text)
     end
   end
 end

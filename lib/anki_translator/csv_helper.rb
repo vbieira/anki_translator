@@ -5,10 +5,11 @@ module AnkiTranslator
     DEFAULT_INPUT_FILE = "input.csv"
     DEFAULT_OUTPUT_FILE = "output.csv"
 
-    attr_reader :notes, :references
+    attr_reader :notes, :references, :total
 
     def initialize(input = DEFAULT_INPUT_FILE, _output = DEFAULT_OUTPUT_FILE)
       @notes = parse(input)
+      @total = @notes.count
       @references = References.new
     end
 
@@ -38,12 +39,20 @@ module AnkiTranslator
     end
 
     def add_references
-      notes.each do |note|
+      notes.each_with_index do |note, i|
+        puts %([#{i + 1}/#{total}] "#{note.text}")
         references.search(note.text)
-        note.definition = references.definition
-        note.definition = references.mw_definition(note.text) unless note.definition
+        note.definition = fetch_definition(note.text)
         note.translation = references.translate
       end
+    end
+
+    def fetch_definition(text)
+      puts "fetch_definition"
+      gt_definition = references.definition
+      return gt_definition unless gt_definition.nil?
+
+      references.mw_definition(text)
     end
 
     def parse_context(text, context)
