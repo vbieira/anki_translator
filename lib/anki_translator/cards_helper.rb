@@ -14,12 +14,12 @@ module AnkiTranslator
       @output_file = output_file
     end
 
-    def generate
-      notes.each_with_index do |note, i|
-        print %(\n[#{(i / total.to_f * 100).round(2)}%])
+    def generate(start_at = 0, end_at = total)
+      notes[start_at..end_at].each_with_index do |note, i|
+        print %(\n#{i + start_at}/#{end_at})
         add_reference(note)
       end
-      write(anki_cards, output_file)
+      write(anki_cards[start_at..end_at], "#{start_at}-#{end_at}-#{output_file}")
     end
 
     private
@@ -94,6 +94,7 @@ module AnkiTranslator
       file = File.read(filename)
       anki_file = filename.match?(/.txt$/)
       if anki_file
+        puts "parsing Anki file..."
         arr = CSV.parse(file, col_sep: "\t")
         arr.map { |a| Note.new(text: a.first) }
       else
