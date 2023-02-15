@@ -19,6 +19,7 @@ module AnkiTranslator
         print %(\n#{i + start_at}/#{end_at})
         add_reference(note)
       end
+      print_stats(notes[start_at..end_at])
       write(anki_cards[start_at..end_at], "#{start_at}-#{end_at}-#{output_file}")
     end
 
@@ -30,7 +31,7 @@ module AnkiTranslator
     def anki_cards
       notes.map do |note|
         back = parse_translation(note.translation) +
-               parse_definition(note.definition) +
+               parse_definition(note) +
                parse_context(note.text, note.context)
         { front: note.text.downcase, back: back }
       end
@@ -44,9 +45,20 @@ module AnkiTranslator
       filename
     end
 
+    def print_stats(cards)
+      no_translation, no_definition, gt_definition, mw_definition = cards.each_with_object([0, 0, 0, 0]) do |c, arr|
+        arr[0] += 1 unless c.translation
+        arr[1] += 1 unless c.gt_definition || mw_definition
+        arr[2] += 1 if c.gt_definition
+        arr[3] += 1 if c.mw_definition
+      end
+      puts "\n\nno translation: #{no_translation}\nno definition: #{no_definition}"
+      puts "google translate: #{gt_definition}\nmerriam webster: #{mw_definition}\n"
+    end
+
     def add_reference(note)
       references.search(parse_search_text(note.text))
-      note.definition = fetch_definition(note.text)
+      fetch_definition(note)
       note.translation = fetch_translation
       references.clear_search
     end
@@ -61,13 +73,12 @@ module AnkiTranslator
       translation
     end
 
-    def fetch_definition(text)
-      definition = references.definition
-      return definition unless definition.nil?
+    def fetch_definition(note)
+      note.gt_definition = references.definition
+      return note.gt_definition if note.gt_definition
 
-      definition = references.mw_definition(text)
-      print " [no definition]" unless definition
-      definition
+      note.mw_definition = references.mw_definition(note.text)
+      print " [no definition]" unless note.mw_definition
     end
 
     def parse_context(text, context)
@@ -82,14 +93,15 @@ module AnkiTranslator
       "#{translation.join(", ")}\n"
     end
 
-    def parse_definition(definitions)
+    def parse_definition(note)
+      definitions = note.gt_definition || note.mw_definition
       return "" unless definitions&.any?
 
       lis = definitions.map { |definition| "<li>#{definition}</li>" }
       "<ol>#{lis.join("")}</ol>"
     end
 
-    Note = Struct.new(:text, :context, :definition, :translation)
+    Note = Struct.new(:text, :context, :definition, :gt_definition, :mw_definition, :translation)
     def parse(filename)
       file = File.read(filename)
       anki_file = filename.match?(/.txt$/)
