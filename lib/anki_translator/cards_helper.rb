@@ -46,14 +46,16 @@ module AnkiTranslator
     end
 
     def print_stats(cards)
-      no_translation, no_definition, gt_definition, mw_definition = cards.each_with_object([0, 0, 0, 0]) do |c, arr|
+      counts = cards.each_with_object([0, 0, 0, 0, 0]) do |c, arr|
         arr[0] += 1 unless c.translation
-        arr[1] += 1 unless c.gt_definition || mw_definition
+        arr[1] += 1 unless c.gt_definition || c.mw_definition || c.mm_definition
         arr[2] += 1 if c.gt_definition
         arr[3] += 1 if c.mw_definition
+        arr[4] += 1 if c.mm_definition
       end
-      puts "\n\nno translation: #{no_translation}\nno definition: #{no_definition}"
-      puts "google translate: #{gt_definition}\nmerriam webster: #{mw_definition}\n"
+      puts "\n\nno translation: #{counts[0]}\nno definition: #{counts[1]}"
+      puts "google translate: #{counts[2]}\nmerriam webster: #{counts[3]}"
+      puts "macmillan dictionary: #{counts[4]}\n"
     end
 
     def add_reference(note)
@@ -78,7 +80,10 @@ module AnkiTranslator
       return note.gt_definition if note.gt_definition
 
       note.mw_definition = references.mw_definition(note.text)
-      print " [no definition]" unless note.mw_definition
+      return note.mw_definition if note.mw_definition
+
+      note.mm_definition = references.mm_definition(note.text)
+      print " [no definition]" unless note.mm_definition
     end
 
     def parse_context(text, context)
@@ -94,14 +99,14 @@ module AnkiTranslator
     end
 
     def parse_definition(note)
-      definitions = note.gt_definition || note.mw_definition
+      definitions = note.gt_definition || note.mw_definition || note.mm_definition
       return "" unless definitions&.any?
 
       lis = definitions.map { |definition| "<li>#{definition}</li>" }
       "<ol>#{lis.join("")}</ol>"
     end
 
-    Note = Struct.new(:text, :context, :definition, :gt_definition, :mw_definition, :translation)
+    Note = Struct.new(:text, :context, :definition, :gt_definition, :mw_definition, :mm_definition, :translation)
     def parse(filename)
       file = File.read(filename)
       anki_file = filename.match?(/.txt$/)
