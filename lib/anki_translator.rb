@@ -7,6 +7,9 @@ require "capybara/sessionkeeper"
 
 require_relative "anki_translator/cards_helper"
 require_relative "anki_translator/references"
+require_relative "anki_translator/references/macmillan_dictionary"
+require_relative "anki_translator/references/google_translate"
+require_relative "anki_translator/references/merriam_webster"
 require_relative "anki_translator/version"
 
 Dotenv.load
