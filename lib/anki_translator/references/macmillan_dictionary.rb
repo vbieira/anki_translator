@@ -14,7 +14,6 @@ module AnkiTranslator
         @session.click_button("I Accept")
       end
 
-      Definition = Struct.new(:text, :examples, :source)
       def fetch_definitions(term)
         search(term)
         definitions = session.all("span", class: "DEFINITION")
@@ -36,7 +35,9 @@ module AnkiTranslator
 
       def find_examples(element)
         parent = element.first(:xpath, ".//..")
-        if parent.has_selector?("span", class: "EXAMPLE")
+        if parent.has_selector?("p", class: "EXAMPLE")
+          parent.all("p", class: "EXAMPLE").map(&:text)
+        elsif parent.has_selector?("span", class: "EXAMPLE")
           parent.all("span", class: "EXAMPLE").map(&:text)
         elsif parent.has_selector?("div", class: "openEx")
           parent.all("div", class: "openEx").map(&:text)

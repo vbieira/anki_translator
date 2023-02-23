@@ -5,22 +5,24 @@ module AnkiTranslator
     DEFAULT_INPUT_FILE = "input.csv"
     DEFAULT_OUTPUT_FILE = "output.csv"
 
+    Note = Struct.new(:text, :context, :definitions, :translations)
+
     attr_reader :notes
 
     def initialize(input_file = DEFAULT_INPUT_FILE, output_file = DEFAULT_OUTPUT_FILE)
       @notes = parse(input_file)
       @total = @notes.count
-      @references = References.new
       @output_file = output_file
     end
 
     def generate(start_at = 0, end_at = total)
       notes[start_at..end_at].each_with_index do |note, i|
-        print %(\n#{i + start_at}/#{end_at})
-        add_reference(note)
+        print %(\n#{i + start_at}/#{end_at} "#{note.text}")
+        note.definitions, note.translations = References.definitions_and_translations(note.text)
       end
       print_stats(notes[start_at..end_at])
-      write(anki_cards[start_at..end_at], "#{start_at}-#{end_at}-#{output_file}")
+      cards = anki_cards(notes[start_at..end_at])
+      write(cards, "#{start_at}-#{end_at}-#{output_file}")
     end
 
     private
@@ -28,14 +30,16 @@ module AnkiTranslator
     attr_writer :notes
     attr_reader :references, :total, :output_file
 
-    def anki_cards
-      notes.map do |note|
-        back = parse_translation(note.translation) +
-               parse_definition(note) +
-               parse_context(note.text, note.context)
+    def anki_cards(selected_notes)
+      selected_notes.map do |note|
+        back = parse_translations(note.translations) +
+               parse_definitions(note.definitions)
+        #  parse_context(note.text, note.context)
+        # puts "\n-------------------#{note.text}-------------------\n#{back}"
         { front: note.text.downcase, back: back }
       end
     end
+    # TODO: cards preview?
 
     def write(array, filename)
       csv = CSV.generate do |row|
@@ -45,45 +49,18 @@ module AnkiTranslator
       filename
     end
 
-    def print_stats(cards)
-      counts = cards.each_with_object([0, 0, 0, 0, 0]) do |c, arr|
-        arr[0] += 1 unless c.translation
-        arr[1] += 1 unless c.gt_definition || c.mw_definition || c.mm_definition
-        arr[2] += 1 if c.gt_definition
-        arr[3] += 1 if c.mw_definition
-        arr[4] += 1 if c.mm_definition
+    def print_stats(selected_notes)
+      stats = selected_notes.each_with_object([0, 0, 0, 0, 0]) do |c, arr|
+        arr[0] += 1 unless c.translations&.any?
+        arr[1] += 1 unless c.definitions&.any?
+        arr[2] += 1 if c.definitions&.any? { |d| d.source == :google_translate }
+        arr[3] += 1 if c.definitions&.any? { |d| d.source == :merriam_webster }
+        arr[4] += 1 if c.definitions&.any? { |d| d.source == :macmillan }
       end
-      puts "\n\nno translation: #{counts[0]}\nno definition: #{counts[1]}"
-      puts "google translate: #{counts[2]}\nmerriam webster: #{counts[3]}"
-      puts "macmillan dictionary: #{counts[4]}\n"
-    end
-
-    def add_reference(note)
-      references.search(parse_search_text(note.text))
-      fetch_definition(note)
-      note.translation = fetch_translation
-      references.clear_search
-    end
-
-    def parse_search_text(text)
-      text.gsub("<br>", "")
-    end
-
-    def fetch_translation
-      translation = references.translate
-      print " [no translation]" unless translation
-      translation
-    end
-
-    def fetch_definition(note)
-      note.gt_definition = references.definition
-      return note.gt_definition if note.gt_definition
-
-      note.mw_definition = references.mw_definition(note.text)
-      return note.mw_definition if note.mw_definition
-
-      note.mm_definition = references.mm_definition(note.text)
-      print " [no definition]" unless note.mm_definition
+      # TODO: print the ones with no definition
+      puts "\n\nno translation: #{stats[0]}\nno definition: #{stats[1]}"
+      puts "google translate: #{stats[2]}\nmerriam webster: #{stats[3]}"
+      puts "macmillan dictionary: #{stats[4]}\n"
     end
 
     def parse_context(text, context)
@@ -92,21 +69,29 @@ module AnkiTranslator
       "#{context.gsub(text, "<strong>#{text}</strong>")}\n"
     end
 
-    def parse_translation(translation)
-      return "" unless translation
+    def parse_translations(translations)
+      return "" unless translations&.any?
 
-      "#{translation.join(", ")}\n"
+      "#{translations.map(&:text).join(", ")}\n"
     end
 
-    def parse_definition(note)
-      definitions = note.gt_definition || note.mw_definition || note.mm_definition
+    def parse_definitions(definitions)
       return "" unless definitions&.any?
 
-      lis = definitions.map { |definition| "<li>#{definition}</li>" }
-      "<ol>#{lis.join("")}</ol>"
+      definitions
+        .group_by(&:source)
+        .map { |_k, v| ul_elements(v) }
+        .join
     end
 
-    Note = Struct.new(:text, :context, :definition, :gt_definition, :mw_definition, :mm_definition, :translation)
+    def ul_elements(arr)
+      lis = arr.map do |d|
+        examples = d.examples&.any? ? %( "<em>#{d.examples.join(", ")}</em>") : ""
+        "<li>#{d.text}#{examples}</li>"
+      end
+      "<ul>#{lis.join}</ul>"
+    end
+
     def parse(filename)
       file = File.read(filename)
       anki_file = filename.match?(/.txt$/)

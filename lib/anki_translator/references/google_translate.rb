@@ -18,7 +18,9 @@ module AnkiTranslator
         return unless session.has_selector?("h3", text: "Definitions of ")
 
         definitions = session.find("h3", text: "Definitions of ")&.all(:xpath, ".//..")&.first&.all("div[lang=en]")
-        parse_definitions(definitions) + translations
+        a = []
+        a.push parse_definitions(definitions)
+        a.push translations
       rescue Selenium::WebDriver::Error::StaleElementReferenceError
         new_session
         nil
@@ -29,9 +31,9 @@ module AnkiTranslator
       attr_writer :session
 
       def new_session
-        s = Capybara::Session.new(:chrome)
-        s.visit("#{URL}?sl=en&tl=#{TARGET_LANGUAGE}&op=translate")
-        s
+        session = Capybara::Session.new(:chrome)
+        session.visit("#{URL}?sl=en&tl=#{TARGET_LANGUAGE}&op=translate")
+        session
       end
 
       def search(term)
@@ -51,7 +53,6 @@ module AnkiTranslator
         search_element.find("textarea").set("")
       end
 
-      Translation = Struct.new(:text, :source)
       def translations
         return unless session.has_selector?("h3", text: "Translations of")
 
@@ -60,12 +61,11 @@ module AnkiTranslator
         end
       end
 
-      Definition = Struct.new(:text, :examples, :source)
       def parse_definitions(definitions)
         (0...definitions.count).step(2).map do |i|
           definition = definitions[i].text
           quote = definitions[i + 1]&.text
-          Definition.new(text: definition, examples: quote, source: name)
+          Definition.new(text: definition, examples: [quote], source: name)
         end
       end
     end

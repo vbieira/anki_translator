@@ -16,7 +16,6 @@ module AnkiTranslator
         end
       end
 
-      Definition = Struct.new(:text, :examples, :source)
       def fetch_definitions(term)
         definitions = search(term)
         definitions.map do |d|
