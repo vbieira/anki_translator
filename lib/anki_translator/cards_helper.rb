@@ -16,10 +16,7 @@ module AnkiTranslator
     end
 
     def generate(start_at = 0, end_at = total)
-      notes[start_at..end_at].each_with_index do |note, i|
-        print %(\n#{i + start_at}/#{end_at} "#{note.text}")
-        note.definitions, note.translations = References.definitions_and_translations(note.text)
-      end
+      add_definitions_and_translations(start_at, end_at)
       print_stats(notes[start_at..end_at])
       cards = anki_cards(notes[start_at..end_at])
       write(cards, "#{start_at}-#{end_at}-#{output_file}")
@@ -30,16 +27,25 @@ module AnkiTranslator
     attr_writer :notes
     attr_reader :references, :total, :output_file
 
+    def add_definitions_and_translations(start_at, end_at)
+      notes[start_at..end_at].each_with_index do |note, i|
+        print %(\n#{i + start_at}/#{end_at} "#{note.text}")
+        note.definitions, note.translations = References.definitions_and_translations(note.text)
+      end
+    end
+
     def anki_cards(selected_notes)
-      selected_notes.map do |note|
+      selected_notes.each_with_object([]) do |note, arr|
+        next unless note.definitions&.any? || note.translations&.any?
+
         back = parse_translations(note.translations) +
                parse_definitions(note.definitions)
         #  parse_context(note.text, note.context)
         # puts "\n-------------------#{note.text}-------------------\n#{back}"
-        { front: note.text.downcase, back: back }
+        arr.push({ front: note.text.downcase, back: back })
       end
     end
-    # TODO: cards preview?
+    # TODO: cards preview? frontend?
 
     def write(array, filename)
       csv = CSV.generate do |row|
@@ -50,17 +56,20 @@ module AnkiTranslator
     end
 
     def print_stats(selected_notes)
-      stats = selected_notes.each_with_object([0, 0, 0, 0, 0]) do |c, arr|
-        arr[0] += 1 unless c.translations&.any?
-        arr[1] += 1 unless c.definitions&.any?
-        arr[2] += 1 if c.definitions&.any? { |d| d.source == :google_translate }
-        arr[3] += 1 if c.definitions&.any? { |d| d.source == :merriam_webster }
-        arr[4] += 1 if c.definitions&.any? { |d| d.source == :macmillan }
+      default = { no_translation: 0, no_definition: [] }
+      counts_hash = References.source_names.each_with_object(default) { |sn, h| h[sn] = 0 }
+      puts "\n\n------ stats ------\n"
+      count_definitions(selected_notes, counts_hash).each { |k, v| puts "#{k}: #{v}" }
+    end
+
+    def count_definitions(selected_notes, counts_hash)
+      selected_notes.each_with_object(counts_hash) do |c, hash|
+        hash[:no_translation] += 1 unless c.translations&.any?
+        hash[:no_definition].push(c.text) unless c.definitions&.any?
+        References.source_names.each do |sn|
+          hash[sn] += 1 if c.definitions&.any? { |d| d.source == sn }
+        end
       end
-      # TODO: print the ones with no definition
-      puts "\n\nno translation: #{stats[0]}\nno definition: #{stats[1]}"
-      puts "google translate: #{stats[2]}\nmerriam webster: #{stats[3]}"
-      puts "macmillan dictionary: #{stats[4]}\n"
     end
 
     def parse_context(text, context)

@@ -13,6 +13,10 @@ module AnkiTranslator
         end
       end
 
+      def source_names
+        sources.map(&:name)
+      end
+
       private
 
       def sources
