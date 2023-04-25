@@ -2,10 +2,8 @@ PATH
   remote: .
   specs:
     anki_translator (0.1.0)
-      capybara-sessionkeeper
-      dotenv
-      faraday
-      sqlite3
+      capybara-sessionkeeper (~> 0.2.0)
+      faraday (>= 2.7.4)
 
 GEM
   remote: https://rubygems.org/
@@ -85,7 +83,6 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
-    sqlite3 (1.4.4)
     unicode-display_width (2.4.2)
     websocket (1.2.9)
     xpath (3.2.0)
@@ -96,6 +93,7 @@ PLATFORMS
 
 DEPENDENCIES
   anki_translator!
+  dotenv
   pry
   rake (~> 13.0)
   rspec (~> 3.0)
