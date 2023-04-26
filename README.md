@@ -21,7 +21,7 @@ If bundler is not being used to manage dependencies, install the gem by executin
 To generate CSV file with Basic Anki cards from a CSV input file containing `text` and `context`:
 ```rb
 helper = AnkiTranslator::CardsHelper.new
-notes = helper.generate
+notes = helper.generate_csv_file
 ```
 
 ## Development

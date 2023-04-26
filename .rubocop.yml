@@ -5,6 +5,10 @@ require:
 AllCops:
   TargetRubyVersion: 2.6
 
+Metrics/BlockLength:
+  Exclude:
+    - Guardfile
+
 Style/Documentation:
   Enabled: false
 

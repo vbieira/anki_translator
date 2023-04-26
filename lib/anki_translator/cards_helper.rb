@@ -15,7 +15,7 @@ module AnkiTranslator
       @output_file = output_file
     end
 
-    def generate(start_at = 0, end_at = total)
+    def generate_csv_file(start_at = 0, end_at = total)
       add_definitions_and_translations(start_at, end_at)
       print_stats(notes[start_at..end_at])
       cards = anki_cards(notes[start_at..end_at])
@@ -59,16 +59,29 @@ module AnkiTranslator
       default = { no_translation: 0, no_definition: [] }
       counts_hash = References.source_names.each_with_object(default) { |sn, h| h[sn] = 0 }
       puts "\n\n------ stats ------\n"
-      count_definitions(selected_notes, counts_hash).each { |k, v| puts "#{k}: #{v}" }
+      stats(selected_notes, counts_hash).each { |k, v| puts "#{k}: #{v}" }
     end
 
-    def count_definitions(selected_notes, counts_hash)
-      selected_notes.each_with_object(counts_hash) do |c, hash|
-        hash[:no_translation] += 1 unless c.translations&.any?
-        hash[:no_definition].push(c.text) unless c.definitions&.any?
-        References.source_names.each do |sn|
-          hash[sn] += 1 if c.definitions&.any? { |d| d.source == sn }
-        end
+    def stats(selected_notes, counts_hash)
+      selected_notes.each do |c|
+        increment_no_translation(counts_hash, c)
+        add_no_definition(counts_hash, c)
+        increment_source_names(counts_hash, c)
+      end
+      counts_hash
+    end
+
+    def increment_no_translation(hash, note)
+      hash[:no_translation] += 1 unless note.translations&.any?
+    end
+
+    def add_no_definition(hash, note)
+      hash[:no_definition].push(note.text) unless note.definitions&.any?
+    end
+
+    def increment_source_names(hash, note)
+      References.source_names.each do |sn|
+        hash[sn] += 1 if note.definitions&.any? { |d| d.source == sn }
       end
     end
 
