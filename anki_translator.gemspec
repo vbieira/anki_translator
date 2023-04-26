@@ -38,7 +38,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency "rubocop-rake", "~> 0.6.0"
   spec.add_dependency "rubocop-rspec", "~> 2.20"
 
-  spec.add_development_dependency "dotenv"
+  spec.add_development_dependency "dotenv", "~> 2.8", ">= 2.8.1"
+  spec.add_development_dependency "guard", "~> 2.18"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
