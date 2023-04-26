@@ -33,8 +33,10 @@ Gem::Specification.new do |spec|
 
   # Uncomment to register a new dependency of your gem
   # spec.add_dependency "example-gem", "~> 1.0"
-  spec.add_dependency "capybara-sessionkeeper", '~> 0.2.0'
-  spec.add_dependency "faraday", '>= 2.7.4'
+  spec.add_dependency "capybara-sessionkeeper", "~> 0.2.0"
+  spec.add_dependency "faraday", ">= 2.7.4"
+  spec.add_dependency "rubocop-rake", "~> 0.6.0"
+  spec.add_dependency "rubocop-rspec", "~> 2.20"
 
   spec.add_development_dependency "dotenv"
 
