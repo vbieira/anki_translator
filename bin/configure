@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+AnkiTranslator.configure do |config|
+  config.merriam_webster_api_url = ENV["KINDLE_READER_URL"]
+  config.merriam_webster_api_key = ENV["MERRIAM_WEBSTER_API_KEY"]
+end

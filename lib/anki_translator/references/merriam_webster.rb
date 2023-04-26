@@ -3,15 +3,14 @@
 module AnkiTranslator
   module References
     class MerriamWebster
-      URL = "https://www.dictionaryapi.com/api/v3/references/collegiate/json/"
-
       attr_reader :conn, :session, :name
 
       def initialize
         @name = :merriam_webster
-        params = { key: ENV["MERRIAM_WEBSTER_API_KEY"] }
+        params = { key: AnkiTranslator.configuration.merriam_webster_api_key }
         headers = { "Content-Type" => "application/json" }
-        @conn = Faraday.new(url: URL, params: params, headers: headers) do |f|
+        @conn = Faraday.new(url: AnkiTranslator.configuration.merriam_webster_api_url, params: params,
+                            headers: headers) do |f|
           f.response :json
         end
       end
