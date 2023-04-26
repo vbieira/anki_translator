@@ -1,0 +1,66 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://www.dictionaryapi.com/api/v3/references/collegiate/json/husky?key=<MERRIAM_WEBSTER_API_KEY>
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Content-Type:
+      - application/json
+      User-Agent:
+      - Faraday v2.7.4
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 26 Apr 2023 01:37:05 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '4357'
+      Connection:
+      - keep-alive
+      Server:
+      - Apache
+      Cache-Control:
+      - max-age=86400, public
+      Pragma:
+      - cache
+      Vary:
+      - Accept-Encoding
+      Access-Control-Allow-Origin:
+      - "*"
+    body:
+      encoding: ASCII-8BIT
+      string: '[{"meta":{"id":"husky:1","uuid":"92cdaae3-5123-4971-b909-c81ddda40cd3","sort":"080314600","src":"collegiate","section":"alpha","stems":["huskier","huskiest","huskily","huskiness","huskinesses","husky"],"offensive":false},"hom":1,"hwi":{"hw":"hus*ky","prs":[{"mw":"\u02c8h\u0259-sk\u0113","sound":{"audio":"husky001","ref":"c","stat":"1"}}]},"fl":"adjective","ins":[{"if":"hus*ki*er"},{"ifc":"-est","if":"hus*ki*est"}],"def":[{"sseq":[[["sense",{"dt":[["text","{bc}hoarse
+        with or as if with emotion"]]}]]]}],"uros":[{"ure":"hus*ki*ly","prs":[{"mw":"\u02c8h\u0259-sk\u0259-l\u0113","sound":{"audio":"husky003","ref":"c","stat":"1"}}],"fl":"adverb"},{"ure":"hus*ki*ness","prs":[{"mw":"\u02c8h\u0259-sk\u0113-n\u0259s","sound":{"audio":"husky004","ref":"c","stat":"1"}}],"fl":"noun"}],"et":[["text","probably
+        from {it}husk{\/it} huskiness, from obsolete {it}husk{\/it} to have a dry
+        cough"]],"date":"circa 1722","shortdef":["hoarse with or as if with emotion"]},{"meta":{"id":"husky:2","uuid":"bd7d4829-f2cb-4e9a-9a2a-71b9c48e47a8","sort":"080314700","src":"collegiate","section":"alpha","stems":["huskies","husky"],"offensive":false},"hom":2,"hwi":{"hw":"hus*ky","prs":[{"mw":"\u02c8h\u0259-sk\u0113","sound":{"audio":"husky001","ref":"c","stat":"1"}}]},"fl":"noun","ins":[{"il":"plural","if":"hus*kies"}],"def":[{"sseq":[[["sense",{"sn":"1","dt":[["text","{bc}{sx|siberian
+        husky||}"]]}]],[["sense",{"sn":"2","dt":[["text","{bc}a heavy-coated working
+        dog of the New World arctic region"]]}]]]}],"et":[["text","shortening of {it}Huskemaw,
+        Uskemaw{\/it} Eskimo, from Cree {it}a\u0161kime\u00b7w{\/it}; akin to Montagnais
+        (Algonquian language of eastern Canada) {it}aiachkime8{\/it} Micmac, Eskimo
+        {ma}{mat|eskimo|}{\/ma}"]],"date":"1852{ds||2||}","shortdef":["siberian husky","a
+        heavy-coated working dog of the New World arctic region"]},{"meta":{"id":"husky:3","uuid":"778911e8-7c8e-4ca4-9d2b-0af0948595b4","sort":"080314800","src":"collegiate","section":"alpha","stems":["huskier","huskiest","huskily","huskiness","huskinesses","husky"],"offensive":false},"hom":3,"hwi":{"hw":"hus*ky","prs":[{"mw":"\u02c8h\u0259-sk\u0113","sound":{"audio":"husky001","ref":"c","stat":"1"}}]},"fl":"adjective","ins":[{"if":"hus*ki*er"},{"ifc":"-est","if":"hus*ki*est"}],"def":[{"sseq":[[["sense",{"sn":"1","dt":[["text","{bc}{sx|burly||},
+        {sx|robust||}"]]}]],[["sense",{"sn":"2","dt":[["text","{bc}{sx|large||}"]]}]]]}],"et":[["text","probably
+        from {et_link|husk:1|husk:1}"]],"date":"1869{ds||1||}","shortdef":["burly,
+        robust","large"]},{"meta":{"id":"husky:4","uuid":"a6daa108-d62e-4c2b-8308-ccd57f02f577","sort":"080314900","src":"collegiate","section":"alpha","stems":["huskies","husky"],"offensive":false},"hom":4,"hwi":{"hw":"hus*ky","prs":[{"mw":"\u02c8h\u0259-sk\u0113","sound":{"audio":"husky001","ref":"c","stat":"1"}}]},"fl":"noun","ins":[{"il":"plural","if":"hus*kies"}],"def":[{"sseq":[[["sense",{"dt":[["text","{bc}one
+        that is husky"]]}]]]}],"date":"1864","shortdef":["one that is husky"]},{"meta":{"id":"husky:5","uuid":"4652923b-b979-4f84-86d5-ce4d45b22327","sort":"080315000","src":"collegiate","section":"alpha","stems":["huskier","huskiest","huskily","huskiness","huskinesses","husky"],"offensive":false},"hom":5,"hwi":{"hw":"husky","prs":[{"mw":"\u02c8h\u0259-sk\u0113","sound":{"audio":"husky001","ref":"c","stat":"1"}}]},"fl":"adjective","ins":[{"if":"husk*i*er"},{"ifc":"-est","if":"husk*i*est"}],"def":[{"sseq":[[["sense",{"dt":[["text","{bc}resembling,
+        containing, or full of {a_link|husks}"]]}]]]}],"date":"1552","shortdef":["resembling,
+        containing, or full of husks"]},{"meta":{"id":"Siberian husky","uuid":"6b2f8008-711f-4ec9-99bc-0e45ea3967e2","sort":"194379300","src":"collegiate","section":"alpha","stems":["Siberian
+        huskies","Siberian husky"],"offensive":false},"hwi":{"hw":"Si*be*ri*an husky","prs":[{"mw":"s\u012b-\u02c8bir-\u0113-\u0259n-","sound":{"audio":"siberi01","ref":"c","stat":"1"}}]},"fl":"noun","def":[{"sseq":[[["sense",{"dt":[["text","{bc}any
+        of a breed of medium-sized thick-coated compact dogs that were developed in
+        Siberia for use as sled dogs and that have erect ears and a bushy tail"]]}]]]}],"art":{"artid":"siberian","capt":"Siberian
+        husky"},"date":"1930","shortdef":["any of a breed of medium-sized thick-coated
+        compact dogs that were developed in Siberia for use as sled dogs and that
+        have erect ears and a bushy tail"]}]'
+  recorded_at: Wed, 26 Apr 2023 01:37:05 GMT
+recorded_with: VCR 6.1.0
