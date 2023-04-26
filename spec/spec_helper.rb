@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "anki_translator"
+require "pry"
 require "vcr"
 
 SENSITIVE_ENV_VARS = %w[
