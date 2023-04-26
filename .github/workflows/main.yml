@@ -3,6 +3,9 @@ name: Ruby
 on:
   push:
 
+env:
+  MERRIAM_WEBSTER_API_KEY: merriam_webster_api_key
+
 jobs:
   build:
     runs-on: ubuntu-latest
