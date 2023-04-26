@@ -1,6 +1,20 @@
 # frozen_string_literal: true
 
 require "anki_translator"
+require "vcr"
+
+SENSITIVE_ENV_VARS = %w[
+  MERRIAM_WEBSTER_API_KEY
+].freeze
+
+VCR.configure do |config|
+  config.cassette_library_dir = "fixtures/vcr_cassettes"
+  config.hook_into :webmock
+
+  SENSITIVE_ENV_VARS.each do |var|
+    config.filter_sensitive_data("<#{var}>") { ENV[var] }
+  end
+end
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -13,3 +27,5 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 end
+
+load "bin/configure"
