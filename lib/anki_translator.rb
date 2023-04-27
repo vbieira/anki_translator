@@ -4,6 +4,7 @@ require "dotenv"
 require "csv"
 require "faraday"
 require "capybara/sessionkeeper"
+require "selenium-webdriver"
 
 require_relative "anki_translator/cards_helper"
 require_relative "anki_translator/configuration"
@@ -19,7 +20,19 @@ module AnkiTranslator
   class Error < StandardError; end
 
   Capybara.register_driver :chrome do |app|
-    Capybara::Selenium::Driver.new(app, browser: :chrome)
+    options = Selenium::WebDriver::Chrome::Options.new
+    options.add_argument("--headless") if configuration.headless_mode
+    options.add_argument("--disable-gpu")
+    options.add_argument("--no-sandbox")
+
+    Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
+  end
+
+  Capybara.register_driver :firefox do |app|
+    options = Selenium::WebDriver::Firefox::Options.new
+    options.add_argument("--headless") if configuration.headless_mode
+
+    Capybara::Selenium::Driver.new(app, browser: :firefox, options: options)
   end
 
   class << self

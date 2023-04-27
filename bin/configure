@@ -2,6 +2,9 @@
 # frozen_string_literal: true
 
 AnkiTranslator.configure do |config|
-  config.merriam_webster_api_url ||= ENV["MERRIAM_WEBSTER_API_URL"]
+  config.headless_mode = ENV["HEADLESS_MODE"] == "true"
   config.merriam_webster_api_key = ENV["MERRIAM_WEBSTER_API_KEY"]
+  config.merriam_webster_api_url = ENV["MERRIAM_WEBSTER_API_URL"]
+  config.selenium_driver = ENV["SELENIUM_DRIVER"].to_sym
+  config.sources = ENV["SOURCES"].split(" ").map(&:to_sym)
 end

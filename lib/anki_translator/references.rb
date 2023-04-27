@@ -20,7 +20,15 @@ module AnkiTranslator
       private
 
       def sources
-        @sources ||= [MacmillanDictionary.new, MerriamWebster.new, GoogleTranslate.new]
+        source_options = {
+          macmillan_dictionary: MacmillanDictionary,
+          merriam_webster: MerriamWebster,
+          google_translate: GoogleTranslate
+        }.freeze
+
+        @sources ||= AnkiTranslator.configuration.sources.map do |s|
+          source_options.include?(s) ? source_options[s].new : nil
+        end.compact
       end
     end
   end

@@ -31,7 +31,7 @@ module AnkiTranslator
       attr_writer :session
 
       def new_session
-        session = Capybara::Session.new(:chrome)
+        session = Capybara::Session.new(AnkiTranslator.configuration.selenium_driver)
         session.visit("#{URL}?sl=en&tl=#{TARGET_LANGUAGE}&op=translate")
         session
       end

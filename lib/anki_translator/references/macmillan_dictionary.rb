@@ -9,7 +9,7 @@ module AnkiTranslator
 
       def initialize
         @name = :macmillan
-        @session = Capybara::Session.new(:chrome)
+        @session = Capybara::Session.new(AnkiTranslator.configuration.selenium_driver)
         @session.visit(URL)
         @session.click_button("I Accept")
       end
