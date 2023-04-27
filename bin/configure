@@ -1,6 +1,10 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require "dotenv"
+
+Dotenv.load
+
 AnkiTranslator.configure do |config|
   config.headless_mode = ENV["HEADLESS_MODE"] == "true"
   config.merriam_webster_api_key = ENV["MERRIAM_WEBSTER_API_KEY"]
