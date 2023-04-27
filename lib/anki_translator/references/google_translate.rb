@@ -65,7 +65,7 @@ module AnkiTranslator
         (0...definitions.count).step(2).map do |i|
           definition = definitions[i].text
           quote = definitions[i + 1]&.text
-          Definition.new(text: definition, examples: [quote], source: name)
+          Definition.new(text: definition, examples: [quote].compact, source: name)
         end
       end
     end
