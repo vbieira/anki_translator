@@ -5,6 +5,9 @@ on:
 
 env:
   MERRIAM_WEBSTER_API_KEY: merriam_webster_api_key
+  MERRIAM_WEBSTER_API_URL: https://www.dictionaryapi.com/api/v3/references/collegiate/json/
+  SELENIUM_DRIVER: firefox
+  SOURCES: google_translate merriam_webster
 
 jobs:
   build:
