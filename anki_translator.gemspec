@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.authors = ["Bianca Vieira"]
   spec.email = ["vbieira@outlook.comb"]
 
-  spec.summary = "Anki translator"
-  # spec.description = "TODO: Write a longer description or delete this line."
+  spec.summary = "Anki Translator"
+  spec.description = "Fetch translations and definitions and generate an Anki CSV file"
   spec.homepage = "https://github.com/vbieira/anki_translator"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 2.6.0"
